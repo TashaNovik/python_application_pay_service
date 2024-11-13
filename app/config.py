@@ -1,13 +1,13 @@
-from dynaconf import Dynaconf, settings
+from dynaconf import Dynaconf
 from pydantic import BaseModel
 
 
 class DBConfig(BaseModel):
-    db_name : str
-    db_user : str
-    db_password : str
-    db_host : str
-    db_port : int
+    db_name: str
+    db_user: str
+    db_password: str
+    db_host: str
+    db_port: int
 
     @property
     def db_url(self):
@@ -15,21 +15,21 @@ class DBConfig(BaseModel):
 
 
 class APPConfig(BaseModel):
-    app_port : int
-    app_host : str
-    app_version : str
-    app_name : str
-    app_mount : str
+    app_port: int
+    app_host: str
+    app_version: str
+    app_name: str
+    app_mount: str
+
 
 class Settings(BaseModel):
-    app : APPConfig
-    db : DBConfig
+    app: APPConfig
+    db: DBConfig
+
 
 dyna_settings = Dynaconf(
-    settings_files = ["settings.toml"],
+    settings_files=["settings.toml"],
 )
 
 settings = Settings(app=dyna_settings["app_settings"], db=dyna_settings["db_settings"])
 #print(settings.app.app_port)
-
-
