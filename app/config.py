@@ -32,4 +32,4 @@ dyna_settings = Dynaconf(
 )
 
 settings = Settings(app=dyna_settings["app_settings"], db=dyna_settings["db_settings"])
-#print(settings.app.app_port)
+# print(settings.app.app_port)

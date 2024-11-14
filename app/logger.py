@@ -1,6 +1,7 @@
-import  logging
+import logging
 from logging.config import dictConfig
 from app.config import settings
+
 
 def configure_logger() -> None:
     logger = logging.getLogger(settings.app.app_name)
@@ -15,14 +16,11 @@ def configure_logger() -> None:
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "default":{
+            "default": {
                 "()": "uvicorn.logging.DefaultFormatter",
                 "ftm": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                "datefmt": "%Y-%m-%d %H:%M:%S"
+                "datefmt": "%Y-%m-%d %H:%M:%S",
             }
         },
-        "handlers": {
-            
-        }
+        "handlers": {},
     }
-

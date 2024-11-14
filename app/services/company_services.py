@@ -10,7 +10,3 @@ class CompanyService:
             await self.company_repo(body)
         except:
             pass
-
-
-
-
