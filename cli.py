@@ -2,6 +2,8 @@ from enum import Enum
 from typing import Annotated
 
 from typer import Typer, Argument
+from app.logger import logger
+
 from app.main import run_api_app
 
 cli = Typer(help="Pay Service CLI")
@@ -10,6 +12,7 @@ cli = Typer(help="Pay Service CLI")
 class Apps(str, Enum):
     api = "api"
     background_tasks = "background_tasks"
+
 
 @cli.command(help="Run API app")
 def run(
@@ -22,3 +25,6 @@ def run(
         case Apps.background_tasks:
             #TODO make background tasks
             pass
+
+
+cli()
