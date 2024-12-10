@@ -4,13 +4,14 @@ from starlette.responses import Response
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_201_CREATED, HTTP_409_CONFLICT
 
 from app.exceptions import DuplicateException
+from app.schemas.payment_schemas import PaymentSchema
 from app.services.payment_service import payment_service
 from app.db import get_session
 
 payments_router = APIRouter(tags=["payments"])
 
 
-@payments_router.get("/")
+@payments_router.get("", response_model=list[PaymentSchema] | None)
 async def get_payments(session: AsyncSession = Depends(get_session)):
     all_payments = await payment_service.get_all_payments(session=session)
     if not all_payments:
@@ -18,7 +19,7 @@ async def get_payments(session: AsyncSession = Depends(get_session)):
     return all_payments
 
 
-@payments_router.get("/{payment_id}", response_model=payment_schema)
+@payments_router.get("/{payment_id}", response_model=PaymentSchema | None)
 async def get_payment_by_id(
     payment_id: str, session: AsyncSession = Depends(get_session)
 ):
@@ -26,7 +27,7 @@ async def get_payment_by_id(
         payment_id=payment_id, session=session
     )
     if not payment:
-        return Response(status_code=HTTP_409_CONFLICT)
+        return Response(status_code=HTTP_404_NOT_FOUND)
     return payment
 
 

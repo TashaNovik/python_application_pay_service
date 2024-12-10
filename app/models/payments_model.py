@@ -8,8 +8,8 @@ from sqlalchemy.orm import relationship
 class Payment(Base, BaseModel):
     __tablename__ = "payments"
 
-    user_id = Column(UUID(as_uuid=True), nullable=False)
-    payment_id = Column(String, nullable=False)
+    user_id = Column(String, nullable=False)
+    payment_id = Column(String, nullable=False, unique=True)
     # Все, что касается платежа должно иметь тип Decimal. Внутри Postgres это Numeric
     amount = Column(Numeric(10, 2), nullable=False)
     email = Column(String)

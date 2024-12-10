@@ -1,6 +1,5 @@
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.logger import logger
 from app.exceptions import SqlException, DuplicateException
 from app.models.companies_model import Company
 from app.repositories import company_repo
@@ -23,7 +22,6 @@ class CompanyService:
         try:
             await self.repo.add(company=company, session=session)
         except SqlException as exc:
-            logger.error("Company already exists")
             raise DuplicateException(message=str(exc))
 
 

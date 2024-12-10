@@ -2,8 +2,6 @@ from enum import Enum
 from typing import Annotated
 
 from typer import Typer, Argument
-from app.logger import logger
-
 from app.main import run_api_app
 
 cli = Typer(help="Pay Service CLI")

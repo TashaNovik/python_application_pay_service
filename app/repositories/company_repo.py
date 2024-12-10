@@ -7,7 +7,7 @@ from app.exceptions import SqlException
 from app.models.companies_model import Company
 from app.repositories.base_repo import BaseRepo
 from app.schemas.company_schemas import CompanySchema
-from app.logger import logger
+
 
 
 class CompanyRepo(BaseRepo):
@@ -22,9 +22,11 @@ class CompanyRepo(BaseRepo):
             session.add(company)
             await session.commit()
         except SQLAlchemyError as exc:
-            logger.error(str(exc))
             await session.rollback()
             raise SqlException(message=str(exc))
+
+    async def get_by_id(self, id_: int, session: AsyncSession) -> None:
+        raise NotImplementedError("get_by_id is not implemented for CompanyRepo")
 
 
 company_repo = CompanyRepo()

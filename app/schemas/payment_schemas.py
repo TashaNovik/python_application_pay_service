@@ -1,5 +1,8 @@
+
+
 from pydantic import BaseModel
 from decimal import Decimal
+from app.enums import PaymentStatus
 
 class PaymentSchema(BaseModel):
     user_id: str
@@ -10,4 +13,10 @@ class PaymentSchema(BaseModel):
     company_id: int
 
 class Config:
-    pass
+    from_attributes = True
+
+class PaymentResultSchema(BaseModel):
+    status: PaymentStatus
+    payment_id: str
+
+
