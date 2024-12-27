@@ -3,15 +3,13 @@ import structlog
 from logging.config import dictConfig
 from typing import TYPE_CHECKING, cast
 
-
 if TYPE_CHECKING:
     from structlog.typing import EventDict, Processor, WrappedLogger
 
-
 def configure_logger(
-        enable_json_logs: bool = False,
-        enable_sql_logs: bool = False,
-        level: int | str = logging.INFO
+    enable_json_logs: bool = False,
+    enable_sql_logs: bool = False,
+    level: int | str = logging.INFO
 ) -> None:
     processors: list[Processor] = [
         structlog.stdlib.filter_by_level,
@@ -24,12 +22,11 @@ def configure_logger(
     ]
 
     structlog.configure(
-        processors=processors + [
-            structlog.stdlib.ProcessorFormatter.wrap_for_formatter],
+        processors=processors
+        + [structlog.stdlib.ProcessorFormatter.wrap_for_formatter],
         logger_factory=structlog.stdlib.LoggerFactory(),
         wrapper_class=structlog.stdlib.BoundLogger,
         cache_logger_on_first_use=True
-
     )
 
     logs_render = cast(
@@ -38,18 +35,19 @@ def configure_logger(
             structlog.processors.JSONRenderer()
             if enable_json_logs
             else structlog.dev.ConsoleRenderer(
-                colors=True, exception_formatter=structlog.dev.ConsoleRenderer()
+                colors=True, 
+                exception_formatter=structlog.dev.ConsoleRenderer()
             )
-        )
+        ),
     )
 
     configure_default_logging_by_structlog(logs_render, level, enable_sql_logs)
 
 
 def _remove_color_message(
-        _: "WrappedLogger",
-        __: str,
-        event_dict: "EventDict",
+    _: "WrappedLogger", 
+    __: str, 
+    event_dict: "EventDict"
 ) -> "EventDict":
     if "color_message" in event_dict:
         del event_dict["color_message"]
@@ -57,9 +55,9 @@ def _remove_color_message(
 
 
 def configure_default_logging_by_structlog(
-        logs_render: "Processor",
-        level: int | str,
-        enable_sql_logs: bool
+    logs_render: "Processor", 
+    level: int | str, 
+    enable_sql_logs: bool
 ) -> None:
     pre_chain: list[Processor] = [
         structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"),
@@ -67,7 +65,7 @@ def configure_default_logging_by_structlog(
         structlog.stdlib.add_logger_name,
         structlog.contextvars.merge_contextvars,
         structlog.processors.format_exc_info,
-        structlog.stdlib.ExtraAdder(),
+        structlog.stdlib.ExtraAdder()
     ]
 
     processor = [
@@ -75,7 +73,6 @@ def configure_default_logging_by_structlog(
         _remove_color_message,
         logs_render
     ]
-
 
     base_config = {
         "version": 1,
@@ -91,29 +88,22 @@ def configure_default_logging_by_structlog(
             "console": {
                 "level": "DEBUG",
                 "class": "logging.StreamHandler",
-                "formatter": "default"
+                "formatter": "default",
             },
             "null": {
-                "class": "logging.NullHandler"
+                "class": "logging.NullHandler",
             },
         },
-
-            "root": {
-                "handlers": ["console"],
-                "level": level,
-            },
-            "loggers": {
-                **(
-                    {"sqlalchemy.engine.Engine": {"level": logging.INFO}}
-                    if enable_sql_logs
-                    else {}
-                )
-            },
-        }
+        "root": {
+            "handlers": ["console"],
+            "level": level,
+        },
+        "loggers": {
+            **(
+                {"sqlalchemy.engine.Engine": {"level": logging.INFO}}
+                if enable_sql_logs
+                else {}
+            )
+        },
+    }
     dictConfig(base_config)
-#
-#     #DEBUG =10
-#     #INFO =20
-#     #WARNING =30
-#     #ERROR =40
-#     #CRITICAL =50

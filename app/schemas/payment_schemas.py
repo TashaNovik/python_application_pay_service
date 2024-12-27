@@ -1,8 +1,7 @@
-
-
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
 from app.enums import PaymentStatus
+
 
 class PaymentSchema(BaseModel):
     user_id: str
@@ -11,12 +10,8 @@ class PaymentSchema(BaseModel):
     email: str | None
     type: str | None
     company_id: int
-
-class Config:
-    from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class PaymentResultSchema(BaseModel):
-    status: PaymentStatus
+    payment_status: PaymentStatus
     payment_id: str
-
-

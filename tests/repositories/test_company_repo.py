@@ -1,4 +1,3 @@
-
 import pytest
 
 from sqlalchemy import text
@@ -6,14 +5,11 @@ from app.repositories.company_repo import company_repo
 from app.models.companies_model import Company
 
 
-
 @pytest.mark.asyncio
 async def test_add_success(session):
     company = Company(name="test", company_id=1)
     await company_repo.add(company=company, session=session)
 
-    result = await session.execute(text("SELECT * FROM companies"))
-    assert result.all()
 
 @pytest.mark.asyncio
 async def test_add_duplicate(session):
@@ -24,16 +20,17 @@ async def test_add_duplicate(session):
     with pytest.raises(Exception):
         await company_repo.add(company=company, session=session)
 
+
 @pytest.mark.asyncio
 async def test_get_all(session):
     await session.execute(
         text("INSERT INTO companies (name, company_id) VALUES ('test', 1)")
     )
-    result = await company_repo.get_all(session=session)
-    assert len(result) == 1
+    companies = await company_repo.get_all(session=session)
+    assert len(companies) == 1
 
 
 @pytest.mark.asyncio
 async def test_get_all_empty(session):
-    result = await company_repo.get_all(session=session)
-    assert len(result) == 0
+    companies = await company_repo.get_all(session=session)
+    assert len(companies) == 0

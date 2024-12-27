@@ -1,14 +1,12 @@
 import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app import logger
 from app.clients.base_payment_client import base_payment_client
-from app.exceptions import SqlException, DuplicateException
+from app.exceptions import DuplicateException, SqlException
 from app.models.payments_model import Payment
 from app.repositories.payment_repo import payment_repo
 from app.schemas.payment_schemas import PaymentSchema
 from app.enums import PaymentStatus
-
 
 logger = structlog.get_logger()
 
@@ -22,13 +20,15 @@ class PaymentService:
         return payments
 
     async def get_payment_by_payment_id(
-            self, payment_id: str, session: AsyncSession
+        self, payment_id: str, session: AsyncSession
     ) -> PaymentSchema | None:
-        payment = await self.repo.get_payment_by_payment_id(payment_id=payment_id, session=session)
+        payment = await self.repo.get_payment_by_payment_id(
+            payment_id=payment_id, session=session
+        )
         return payment
 
     async def create_base_payment(
-            self, session: AsyncSession, payment_data: PaymentSchema
+        self, session: AsyncSession, payment_data: PaymentSchema
     ) -> None:
         payment = Payment(
             user_id = payment_data.user_id,
@@ -55,8 +55,9 @@ class PaymentService:
             )
         except SqlException as exc:
             logger.error(
-                f'Error updating payment status for payment {payment_data.payment_id}: {str(exc)}. Current status: {result.status}'
+                f'Error updating payment status for payment {payment_data.payment_id}: {str(exc)}. Current status: {result.payment_status}'
             )
             raise DuplicateException(message=str(exc))
+
 
 payment_service = PaymentService()

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends
-from fastapi.background import BackgroundTasks
 from app.db import get_session
 from app.exceptions import DuplicateException
 from app.schemas.company_schemas import CompanySchema
@@ -8,9 +7,7 @@ from starlette.responses import Response
 from starlette.status import HTTP_404_NOT_FOUND, HTTP_409_CONFLICT, HTTP_201_CREATED
 from sqlalchemy.ext.asyncio import AsyncSession
 
-
 companies_router = APIRouter(tags=["companies"])
-
 
 @companies_router.get("", response_model=list[CompanySchema] | None)
 async def get_all_companies(session: AsyncSession = Depends(get_session)):
@@ -20,10 +17,13 @@ async def get_all_companies(session: AsyncSession = Depends(get_session)):
     return all_companies
 
 
-@companies_router.post("", response_model=None)
+@companies_router.post("", response_model=None,
+                       responses={
+                           HTTP_201_CREATED: {"description": "Created"},
+                           HTTP_409_CONFLICT: {"description": "Duplicate"}})
 async def create_company(
-        request: CompanySchema,
-        session: AsyncSession = Depends(get_session)
+    request: CompanySchema,
+    session: AsyncSession = Depends(get_session),
 ):
     try:
         await company_service.add_company(request=request, session=session)
